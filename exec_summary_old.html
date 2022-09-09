@@ -58,7 +58,6 @@ ul.task-list{list-style: none;}
 </header>
 
 <div class="cell">
-
 <style type="text/css">
 h1 {
   text-align: center;
@@ -70,34 +69,6 @@ h2,h3 {
   color: red;
   font-weight: bold;
 }
-
-h4 {
-  color: green;
-  font-weight: bold;
-}
-
-h5 {
-  color: grey;
-  font-weight: bold;
-}
-
-caption, .figure-caption {
-    font-size: 1rem;
-    text-align: left;
-    font-weight: bold;
-    color: DarkOliveGreen;
-}
-
-caption, .table-caption {
-    text-align: left;
-    font-weight: bold;
-    color: DarkOliveGreen;
-}
-
-.boxed {
-  border: 1px solid green ;
-}
-
 </style>
 </div>
 <div class="cell">
@@ -108,7 +79,7 @@ caption, .table-caption {
 <div class="cell" data-label="{}">
 <div class="cell-output-display">
 
-<table class=" lightable-material lightable-striped lightable-hover table" style="font-family: &quot;Source Sans Pro&quot;, helvetica, sans-serif; margin-left: auto; margin-right: auto; width: auto !important; margin-left: auto; margin-right: auto;"><caption>Table 1. Respondent Compliance in waist and hip measurement modules</caption>
+<table class=" lightable-material lightable-striped lightable-hover table" style="font-family: &quot;Source Sans Pro&quot;, helvetica, sans-serif; margin-left: auto; margin-right: auto; width: auto !important; margin-left: auto; margin-right: auto;"><caption>Table 1. Respondent Compliance in waist+hip measurement modules</caption>
  <thead>
   <tr>
    <th style="text-align:left;">   </th>
@@ -122,13 +93,13 @@ caption, .table-caption {
    <td style="text-align:left;"> Compliance Rate [Waist] </td>
    <td style="text-align:center;"> 56.2% (n=1683) </td>
    <td style="text-align:center;"> 95.5% (n=22) </td>
-   <td style="text-align:center;"> 22.2% (n=1565) </td>
+   <td style="text-align:center;"> 69.8% (n=497) </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Compliance Rate [Hip] </td>
    <td style="text-align:center;"> 54.2% (n=1683) </td>
    <td style="text-align:center;"> 95.5% (n=22) </td>
-   <td style="text-align:center;"> 7.9% (n=1565) </td>
+   <td style="text-align:center;"> 24.7% (n=497) </td>
   </tr>
 </tbody>
 </table>
@@ -136,18 +107,13 @@ caption, .table-caption {
 </div>
 </div>
 <p>&nbsp;</p>
-<p>Table 1 reports the compliance rate across the three modes of data collection. These initial results suggest that self-measurement with an interviewer present elicits a considerably higher compliance rate (95.5%) than the other two modes of collection: 39pp higher than waist self-measurement in CAWI respondents, and 73pp more than respondents who were assigned the BVI app for waist measurement.</p>
-<p>However, we only have data on interviewer-led, self-measurement for 22 respondents, which warrants caution in interpreting these results.</p>
-<p>The BVI app shows the lowest respondent uptake, at only 22.2% for waist circumference and 7.9% for hip circumference. Out of the 1565 respondents who were asked to download and use the BVI app, <strong>497</strong> (ie. 32%) reported to have installed and logged in successfully. However, only 347 respondents (nearly 70%) send back usable <em>waist</em> data, and only 123 (around 25%) respondents showed valid <em>hip</em> measurements.</p>
-<p>At this stage it’s <strong>not</strong> clear what is the cause of the missing data on waist (N<sub>missing</sub>=150) and hip (N<sub>missing</sub>=224) measurements, but it certainly conditions our ability to interpret the compliance rate of installing and using the app, as almost 1/3 of the respondents who report having installing and logging in successfully don’t send back valid waist and hip data.</p>
+<p>With respect to the BVI app, the table shows us the rate of compliance in relation to those respondents who installed and logged in the app (n=497). We can also compute a separate rate of compliance: out of 1565 respondents who were asked to use the BVI app, only <strong>497</strong> reported to have installed and logged in successfully (compliance rate of <strong>32%</strong>).</p>
+<p>However, from these 497, we only received <strong>347</strong> measurements of waist circumference and <strong>123</strong> measurements of hip circumference, hence the compliance rates shown in Table 1. It’s unclear whether the missing measurements for waist (n=150) and for hip (n=224) are cause by non-compliance from the respondent (even after installing and logging on) or whether they were excluded because the measurements provided was faulty/undefined.</p>
 <p>&nbsp;</p>
 </section>
 <section id="measurements" class="level2">
 <h2 class="anchored" data-anchor-id="measurements">Measurements</h2>
-<div class="cell">
-
-</div>
-<p>In Table 2, we report the average measurement (and standard deviation) in centimeters for waist circumference, hip circumference and waist-to-hip ratio, across the three modes of data collection: (1) self-measurement; (2) interviewer-led, self-measurement; and (3) self-measurement using the BVI app.</p>
+<p>In Table 2, we lay out the average measurements (and standard deviation) in centimeters for waist circumference, hip circumference and waist-to-hip ratio, across the three modes of data collection: (1) self-measurement; (2) self-measurement monitored by interviewer; and (3) self-measurement using the BVI app.</p>
 <div class="cell" data-label="{}">
 <div class="cell-output-display">
 
@@ -171,13 +137,13 @@ caption, .table-caption {
    <td style="text-align:left;"> Hip Circumference </td>
    <td style="text-align:center;"> 101.99 (12.42) </td>
    <td style="text-align:center;"> 110.19 (16.36) </td>
-   <td style="text-align:center;"> 108.04 (15.46) </td>
+   <td style="text-align:center;"> 108.043 (15.46) </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Waist-to-Hip Ratio </td>
-   <td style="text-align:center;"> 0.9 (0.1) </td>
+   <td style="text-align:center;"> 0.9 (0.101) </td>
    <td style="text-align:center;"> 0.912 (0.07) </td>
-   <td style="text-align:center;"> 0.94 (0.14) </td>
+   <td style="text-align:center;"> 1 (0.15) </td>
   </tr>
 </tbody>
 </table>
@@ -185,24 +151,19 @@ caption, .table-caption {
 </div>
 </div>
 <p>&nbsp;</p>
-<p>The BVI app data seems to provide less precise estimates for waist circumference when compared to self-measurements with or without the interviewer present (the standard deviation for waist is twice as large in the BVI app compared to the other two).</p>
-<p>Furthermore, the difference between the average waist in the BVI app data compared to the interviewer-monitored self-measurement is just over 20cm, and almost 30cm compared to the self-measurement group. However, these three groups are not so different in terms of the average weight: approximately 80kg in the self-measurement group, 80kg in the BVI app group and 87kg in the interviewer-led measurement group.</p>
-<p>Therefore, the large differences we find between the BVI app waist measurements and the other two measurements are probably driven by the hurdles of collecting data through the app. The wide standard deviation corroborate the lower efficiency of waist and hip estimates obtained through the app.</p>
-<p>However, one caveat to this interpretation is the large number of outliers in the BVI app data when compared to the other analogue modes of self-measurement, which can explain differences at the mean. Notwithstanding, the values reported in Table 2 are computed after removing one outlier for which the waist circumference was 2000cm as reported by the BVI app. The long form of this report provides more granular results on this point.</p>
-<p>&nbsp;</p>
 </section>
 <section id="comparison" class="level2">
 <h2 class="anchored" data-anchor-id="comparison">Comparison</h2>
-<p>In Table 3, we benchmark the average differences in measurements for each pair of data collection modes, across the three measures we are interested in: waist circumference, hip circumference and waist-to-hip ratio. The average difference is displayed in <em>centimeters</em> for both waist and hip circumferences.</p>
+<p>In Table 3, we look at the average difference (and its standard deviation) between measurements for each pair of data collection modes, across the three measures we are interested in: waist circumference, hip circumference and waist-to-hip ratio. The average difference is displayed in cm for both waist and hip circumferences.</p>
 <div class="cell">
 
 </div>
-<div id="tbl-anonymous-6387753" class="cell tbl-parent quarto-layout-panel anchored" data-label="{}">
+<div id="tbl-anonymous-5917846" class="cell tbl-parent quarto-layout-panel anchored" data-label="{}">
 <div class="panel-caption table-caption">
-<p>Table 3. Average differences in cm between self, interviewer-led, and BVI app measurements. Number of respondents (N) in brackets.</p>
+<p>Table 3. Average differences in cm (and Std. Dev.) between self, interviewer-monitored, and BVI app measurements. Std Dev. in brackets.</p>
 </div>
 <div class="quarto-layout-row quarto-layout-valign-top">
-<div id="tbl-anonymous-6387753-1" class="quarto-layout-cell quarto-layout-cell-subref anchored" data-ref-parent="tbl-anonymous-6387753" style="flex-basis: 33.3%;justify-content: center;">
+<div id="tbl-anonymous-5917846-1" class="quarto-layout-cell quarto-layout-cell-subref anchored" data-ref-parent="tbl-anonymous-5917846" style="flex-basis: 33.3%;justify-content: center;">
 
 <table class=" lightable-paper lightable-hover" style="font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;"><caption>Waist </caption>
  <thead>
@@ -222,21 +183,21 @@ caption, .table-caption {
   </tr>
   <tr>
    <td style="text-align:left;"> Interviewer </td>
-   <td style="text-align:center;"> 2.8 (13) </td>
+   <td style="text-align:center;"> 2.8 (2.98) </td>
    <td style="text-align:center;"> - </td>
    <td style="text-align:center;"> - </td>
   </tr>
   <tr>
    <td style="text-align:left;"> BVI </td>
-   <td style="text-align:center;"> 27.5 (231) </td>
-   <td style="text-align:center;"> 17.4 (5) </td>
+   <td style="text-align:center;"> 27.5 (21.4) </td>
+   <td style="text-align:center;"> 17.4 (19.3) </td>
    <td style="text-align:center;"> - </td>
   </tr>
 </tbody>
 </table>
 
 </div>
-<div id="tbl-anonymous-6387753-2" class="quarto-layout-cell quarto-layout-cell-subref anchored" data-ref-parent="tbl-anonymous-6387753" style="flex-basis: 33.3%;justify-content: center;">
+<div id="tbl-anonymous-5917846-2" class="quarto-layout-cell quarto-layout-cell-subref anchored" data-ref-parent="tbl-anonymous-5917846" style="flex-basis: 33.3%;justify-content: center;">
 
 <table class=" lightable-paper lightable-hover" style="font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;"><caption>Hip </caption>
  <thead>
@@ -256,21 +217,21 @@ caption, .table-caption {
   </tr>
   <tr>
    <td style="text-align:left;"> Interviewer </td>
-   <td style="text-align:center;"> 2.5 (13) </td>
+   <td style="text-align:center;"> 2.5 (2) </td>
    <td style="text-align:center;"> - </td>
    <td style="text-align:center;"> - </td>
   </tr>
   <tr>
    <td style="text-align:left;"> BVI </td>
    <td style="text-align:center;"> 11.5 (11) </td>
-   <td style="text-align:center;"> 6.8 (4) </td>
+   <td style="text-align:center;"> 6.8 (4.6) </td>
    <td style="text-align:center;"> - </td>
   </tr>
 </tbody>
 </table>
 
 </div>
-<div id="tbl-anonymous-6387753-3" class="quarto-layout-cell quarto-layout-cell-subref anchored" data-ref-parent="tbl-anonymous-6387753" style="flex-basis: 33.3%;justify-content: center;">
+<div id="tbl-anonymous-5917846-3" class="quarto-layout-cell quarto-layout-cell-subref anchored" data-ref-parent="tbl-anonymous-5917846" style="flex-basis: 33.3%;justify-content: center;">
 
 <table class=" lightable-paper lightable-hover" style="font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;"><caption>Waist-to-Hip Ratio </caption>
  <thead>
@@ -290,14 +251,14 @@ caption, .table-caption {
   </tr>
   <tr>
    <td style="text-align:left;"> Interviewer </td>
-   <td style="text-align:center;"> 0.04 (13) </td>
+   <td style="text-align:center;"> 0.04 (0.04) </td>
    <td style="text-align:center;"> - </td>
    <td style="text-align:center;"> - </td>
   </tr>
   <tr>
    <td style="text-align:left;"> BVI </td>
-   <td style="text-align:center;"> 0.13 (228) </td>
-   <td style="text-align:center;"> 0.12 (5) </td>
+   <td style="text-align:center;"> 0.16 (0.15) </td>
+   <td style="text-align:center;"> 0.11 (0.16) </td>
    <td style="text-align:center;"> - </td>
   </tr>
 </tbody>
@@ -306,34 +267,6 @@ caption, .table-caption {
 </div>
 </div>
 </div>
-<p>The <em>self-measurement monitored by the interviewer</em> works as a barometer for the quality of the data gathered, as it offers both more reliability and more precision than any of the other two measurements. Unfortunately, we have a small N for CAPI respondents (N=21), those who agreed to measure their waist and hip under the supervision of an interviewer, which dampens our confidence in the results of these comparisons.</p>
-<section id="differences-in-waist-measurements" class="level5">
-<h5 class="anchored" data-anchor-id="differences-in-waist-measurements">Differences in Waist measurements</h5>
-<p>Consistent with earlier results, the BVI app seems to yield the <ins style="color:red">worst quality data</ins>: the average difference in measurements for respondents who used both the tape and the BVI app to measure their waist circumference is around 28cm. The average difference for those respondents who measured with the app and the interviewer present is 17cm. And although the N is small for the latter comparison (only 5 respondents), that is certainly not the case for the former (N=231).</p>
-</section>
-<section id="similar-differences-in-hip-measurements" class="level5">
-<h5 class="anchored" data-anchor-id="similar-differences-in-hip-measurements">Similar differences in Hip measurements…</h5>
-<ul>
-<li><p>between interviewer-led and self-measurement, the average difference in <em>hip circumference</em> is 25cm and in <em>waist-to-hip ratio</em> is 0.04.</p></li>
-<li><p>between the BVI app and tape measurements, the average difference in <em>hip circumference</em> is 11.5 cm (<strong>without interviewer</strong> present) and 6.8 (<strong>with interviewer</strong> present).</p></li>
-</ul>
-</section>
-<section id="and-in-waist-to-hip-ratios" class="level5">
-<h5 class="anchored" data-anchor-id="and-in-waist-to-hip-ratios">And in Waist-to-Hip ratios</h5>
-<p>With respect to <em>waist-to-hip ratios</em>, the BVI app <em>bias</em> is 3 times higher than the self-measurement without interviewer present, when we compare both to interviewer-led measurements of waist-to-hip ratio.</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-</section>
-<section id="take-home-points" class="level4 boxed">
-<h4 class="anchored" data-anchor-id="take-home-points">Take home points</h4>
-<p>&nbsp;</p>
-<ol type="1">
-<li><p>When comparing self-measurement and BVI app data <strong>against</strong> interviewer-led measurements, we find that the bias is quite small for <em>self-measurement without the interviewer</em> and quite large for the <em>BVI app</em>;</p></li>
-<li><p><em>BVI app</em> data tends to be less precise overall in its estimates;</p></li>
-<li><p>The bias in <strong>waist measurements</strong> tends to be considerably higher than in <strong>hip measurements</strong> (2 and a half times higher when comparing <em>BVI app</em> with <em>interviewer-led self-measurement</em>).</p></li>
-<li><p>The lower quality of the <em>BVI app data</em> may be driven by several factors, including the setup of the room where the photos were taken. Only <strong>30%</strong> of the respondents who gave us valid BVI data took a picture with an empty wall in the background, and out of those only 62% (64 respondents) did it in front of a white wall. In short, only 18.4% of the sub-sample with valid BVI app estimates took the pictures in the best possible conditions.</p></li>
-</ol>
-</section>
 </section>
 
 </main>

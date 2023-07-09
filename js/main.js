@@ -47,6 +47,15 @@ $(document).ready(function () {
   if (window.location.pathname && window.location.pathname == '/montevideo2022') {
     $('.panel-cover').addClass('panel-cover--collapsed')
   }
+  
+  if (window.location.hash && window.location.hash == '#ncrm2023') {
+    $('.panel-cover').addClass('panel-cover--collapsed')
+  }
+
+  if (window.location.pathname && window.location.pathname == '/ncrm2023') {
+    $('.panel-cover').addClass('panel-cover--collapsed')
+  }
+
 
 /*
 if (window.location.pathname && window.location.pathname == '{{ site.url }}') {

@@ -1,7 +1,7 @@
 # Site settings
 title: Paulo Serôdio
-description: 'Department of Economic History,
-                School of Economics, University of Barcelona'
+description: 'ISER,
+                University of Essex'
 url: 'https://pauloserodio.com'
 baseurl: '/'
 # google_analytics: 'UA-XXXXXX-X'
@@ -9,7 +9,7 @@ baseurl: '/'
 
 author:
   name: 'Paulo M Serôdio'
-  email: paulo.serodio@sociology.ox.ac.uk
+  email: pamato@essex.ac.uk
   twitter_username: p_serodio
   facebook_username: paulo.serodio
   github_username:  pamato

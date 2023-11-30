@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+  <html lang="en">
+    <head>
+    <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Gantt Chart with Mermaid</title>
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@8.0.0-rc.8/dist/mermaid.min.js"></script>
+          
+          
+          <!-- CSS styles for the Gantt chart tasks -->
+          <!--   .mermaid .task0 {
+            fill: red !important;
+          } -->
+          <style>
+          
+          .mermaid .sectionTitle {
+            font-weight: bold;
+            text-anchor: start;
+            font-size: 14px;
+          }
+        
+        .mermaid .section0 {
+          fill: black !important;
+        }
+        
+        .mermaid .section0 {
+          fill: #E41A1C !important;
+        }
+        
+        .mermaid .section1 {
+          fill: #377EB8 !important;
+        }
+        
+        .mermaid .section2 {
+          fill: #4DAF4A !important;
+        }
+        
+        .mermaid .section3 {
+          fill: #984EA3 !important;
+        }
+        
+        .mermaid .section4 {
+          fill: #FF7F00 !important;
+        }
+        
+        .mermaid .section5 {
+          fill: #FFFF33 !important;
+        }
+        
+        .mermaid .section6 {
+          fill: #A65628 !important;
+        }
+        
+        .mermaid .section7 {
+          fill: #F781BF !important;
+        }
+        
+        .mermaid .section8 {
+          fill: #999999 !important;
+        }
+        
+        </style>
+          </head>
+          <body>
+          
+          <div class="mermaid">
+          gantt
+        title Significant Other and Event Triggered Data Collection
+        dateFormat  YYYY-MM-DD
+        axisFormat %Y-%b
+        
+        section Deadlines
+        fieldwork start w1 [SOS] :crit, 2024-01-01, 2024-01-16                   
+        fieldwork start w2 [SOS] :crit, 2025-01-01, 2025-01-16
+        
+        section Communications & Participant Liaison
+        Phase 2 testing on IP, report findings, data relea [ETDC] : 2024-03-01, 2025-06-01
+        Roll out on main sample [ETDC] : 2025-01-01, 2027-01-01
+        Data release [ETDC] : 2027-01-01, 2027-12-01
+        Fellowships [ETDC] : 2028-01-01, 2029-12-01
+        design w2 materials [SOS] : 2025-01-01, 2025-07-01
+        fellowships post w1 release [SOS] : 2027-01-01, 2028-09-01
+        fellowships post w2 release [SOS] : 2030-01-01, 2031-09-01
+        w1 promote/train data [SOS] : 2026-03-01, 2027-12-01
+        w2 promote/train data [SOS] : 2029-05-01, 2030-12-01
+        
+        section Data
+        Phase 2 testing on IP, report findings, data relea [ETDC] : 2024-03-01, 2025-06-01
+        Roll out on main sample [ETDC] : 2025-01-01, 2027-01-01
+        Data release [ETDC] : 2027-01-01, 2027-12-01
+        Evaluation report for Co-Is [ETDC] : 2030-01-01, 2030-06-01
+        wave 1 close to being fielded [SOS] :active, 2022-03-01, 2025-05-01
+        confirm data flows w2 [SOS] : 2025-07-01, 2025-10-01
+        w15/w1 data flows to select out sample members for contact[SOS] :active 2023-08-01, 2025-07-01
+        w18/w2 data flows to select out sample members for contact  [SOS] : 2026-01-01, 2028-07-01
+        data release prep w1 [SOS] : 2025-09-01, 2026-05-01
+        data release w2 [SOS] : 2028-09-01, 2029-05-01
+        w1 fieldwork [SOS] : 2023-12-01, 2025-07-01
+        fieldwork w 2 [SOS] : 2026-01-01, 2028-07-01
+        weights w2 [SOS] : 2028-10-01, 2028-11-01
+        weights w1 [SOS] : 2025-10-01, 2025-11-01
+        
+        
+        section Data Linkage
+       
+        section Family
+          Review IP16 redbook data [PS] : 2023-12-01, 2024-07-01
+          Significant Other Survey [PS] : 2023-10-01, 2025-03-01
+          PEACH data [PS] : 2024-01-01, 2024-12-01
+          Family matrix [PS] : 2024-01-01, 2024-12-01
+          Data development and data creation [PS] :active, 2021-04-01, 2025-06-01
+          Planning the next research springboard for April 2024 and preparing a PID [DDS] :active, 2023-07-01, 2024-06-01
+          Continual Development [CHM] :active, 2020-01-01, 2025-12-01
+          Content development, questionnaire specification, consultation, [ETDC] :active, 2023-07-01, 2024-10-01
+          confirm data flows w2 [SOS] : 2025-07-01, 2025-10-01
+          data release prep w1 [SOS] : 2025-09-01, 2026-05-01
+          data release w2 [SOS] : 2028-09-01, 2029-05-01
+          design w2 materials [SOS] : 2025-01-01, 2025-07-01
+          design wave 2 [SOS] : 2024-01-01, 2024-07-01
+          w2 ethics app [SOS] : 2025-07-01, 2025-10-01
+          fellowships post w1 release [SOS] : 2027-01-01, 2028-09-01
+          fellowships post w2 release [SOS] : 2030-01-01, 2031-09-01
+          w1 promote/train data [SOS] : 2026-03-01, 2027-12-01
+          w2 promote/train data [SOS] : 2029-05-01, 2030-12-01
+          script w2 [SOS] : 2024-07-01, 2024-12-01
+          test w2 [SOS] : 2025-03-01, 2025-07-01
+          user guide etc w2 [SOS] : 2029-03-01, 2029-05-01
+          user guide w1 [SOS] : 2026-03-01, 2026-05-01
+          weights w2 [SOS] : 2028-11-01, 2029-03-01
+          weights w1 [SOS] : 2025-11-01, 2026-03-01
+        
+        section Health
+        
+        section Income
+        
+        section Information Security
+          Procurement [ETDC] : 2023-10-01, 2024-02-01
+          design w2 materials [SOS] : 2025-01-01, 2025-07-01
+
+        
+        section Methodology/Weights
+          Phase 2 testing on IP, report findings, data release [ETDC] : 2024-03-01, 2025-06-01
+          weights w2 [SOS] : 2028-11-01, 2029-03-01
+          weights w1 [SOS] : 2025-11-01, 2026-03-01
+        
+        section Outreach
+          Phase 2 testing on IP, report findings, data relea [ETDC] : 2024-03-01, 2025-06-01
+          w1 promote/train data [SOS] : 2026-03-01, 2027-12-01
+          w2 promote/train data [SOS] : 2029-05-01, 2030-12-01
+          user guide etc w2 [SOS] : 2029-03-01, 2029-05-01
+          user guide w1 [SOS] : 2026-03-01, 2026-05-01
+       
+        section Policy & Partnership
+          Data release [ETDC] : 2027-01-01, 2027-12-01
+        
+        section Content Development
+          Content development, questionnaire specification, consultation, [ETDC] :active, 2023-07-01, 2024-10-01
+          wave 1 close to being fielded [SOS] :active, 2022-03-01, 2025-05-01
+          design wave 2 [SOS] : 2024-01-01, 2024-07-01
+          script w2 [SOS] : 2024-07-01, 2024-12-01
+          test w2 [SOS] : 2025-03-01, 2025-07-01
+        
+        section Survey Implementation
+          Phase 2 testing on IP, report findings, data relea [ETDC] : 2024-03-01, 2025-06-01
+          Roll out on main sample [ETDC] : 2025-01-01, 2027-01-01
+          wave 1 close to being fielded [SOS] :active, 2022-03-01, 2025-05-01
+          design w2 materials [SOS] : 2025-01-01, 2025-07-01
+          design wave 2 [SOS] : 2024-01-01, 2024-07-01
+          w2 ethics app [SOS] : 2025-07-01, 2025-10-01
+          w1 fieldwork [SOS] : 2023-12-01, 2025-07-01
+          fieldwork w 2 [SOS] : 2026-01-01, 2028-07-01
+          script w2 [SOS] : 2024-07-01, 2024-12-01
+          test w2 [SOS] : 2025-03-01, 2025-07-01
+        
+        section Procurement, Contracts, Budgets
+          Procurement [ETDC] : 2023-10-01, 2024-02-01
+          3 Fellowships [ETDC] : 2028-01-01, 2029-12-01
+          fellowships post w1 release [SOS] : 2027-01-01, 2028-09-01
+          fellowships post w2 release [SOS] : 2030-01-01, 2031-09-01
+
+        section Innovations
+        
+        section Enhancements
+        
+        
+        section  Ethnicity
+          Review achieved sample size, decide stop-go [ES] : 2024-01-01, 2024-02-01
+        
+        
+        </div>
+          
+          <script>
+          mermaid.initialize({
+            startOnLoad: true,
+            theme: 'forest',
+            displayMode: "compact"
+          });
+        </script>
+          
+          </body>
+</html>
+          
+          
+          
+          
+          

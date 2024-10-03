@@ -17,5 +17,3 @@ Explore the survey responses by department or campus below:
         sandbox="allow-scripts allow-same-origin allow-popups">
     </iframe>
 </div>
-
----

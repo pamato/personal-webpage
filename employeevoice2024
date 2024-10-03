@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Embedded Shiny App</title>
+    <style>
+        .iframe-container {
+            width: 100%;
+            height: 600px;  /* Adjust the height as needed */
+            border: none;   /* Remove borders for better integration */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Survey Responses Dashboard</h1>
+    <p>Explore the survey responses by department or campus below:</p>
+
+    <!-- Embed Shiny App with iframe -->
+    <iframe 
+        src="https://pmatos.shinyapps.io/employeevoice/" 
+        class="iframe-container">
+    </iframe>
+
+</body>
+</html>

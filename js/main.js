@@ -62,6 +62,7 @@ $(document).ready(function () {
   
   if (window.location.pathname && window.location.pathname == '/employeevoice2024') {
     $('.panel-cover').addClass('panel-cover--collapsed')
+  }
 
 
 /*

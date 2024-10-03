@@ -56,6 +56,13 @@ $(document).ready(function () {
     $('.panel-cover').addClass('panel-cover--collapsed')
   }
 
+  if (window.location.hash && window.location.hash == '#employeevoice2024') {
+    $('.panel-cover').addClass('panel-cover--collapsed')
+  }
+  
+  if (window.location.pathname && window.location.pathname == '/employeevoice2024') {
+    $('.panel-cover').addClass('panel-cover--collapsed')
+
 
 /*
 if (window.location.pathname && window.location.pathname == '{{ site.url }}') {

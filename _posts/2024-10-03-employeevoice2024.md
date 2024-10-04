@@ -1,11 +1,9 @@
 ---
-title: Empployee Voice Survey 2024
+title: Employee Voice Survey 2024
 layout: default
 permalink: /employeevoice2024
 published: true
 ---
-
-## Responses to Employee Voice Survey
 
 Explore the survey responses by department or campus below:
 

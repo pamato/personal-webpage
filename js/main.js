@@ -64,6 +64,14 @@ $(document).ready(function () {
     $('.panel-cover').addClass('panel-cover--collapsed')
   }
 
+  if (window.location.hash && window.location.hash == '#ncrm2024') {
+    $('.panel-cover').addClass('panel-cover--collapsed')
+  }
+
+  if (window.location.pathname && window.location.pathname == '/ncrm2024') {
+    $('.panel-cover').addClass('panel-cover--collapsed')
+  }
+
 
 /*
 if (window.location.pathname && window.location.pathname == '{{ site.url }}') {

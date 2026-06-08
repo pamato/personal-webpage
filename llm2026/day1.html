@@ -1,0 +1,1877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI for Survey Researchers (Part I) — When you type a prompt, what's happening?</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+<style>
+/* ── Reset reveal defaults ── */
+:root {
+  --r-background-color: #fff;
+  --r-main-font: 'Inter', system-ui, -apple-system, sans-serif;
+  --r-main-font-size: 22px;
+  --r-main-color: #2d2d2d;
+  --r-heading-font: 'Inter', system-ui, -apple-system, sans-serif;
+  --r-heading-color: #1a1a1a;
+  --r-heading-font-weight: 600;
+  --r-heading-text-transform: none;
+  --r-heading-letter-spacing: -0.01em;
+  --r-heading1-size: 1.8em;
+  --r-heading2-size: 1.3em;
+  --r-heading3-size: 1.1em;
+  --r-link-color: #2563eb;
+  --r-link-color-hover: #1d4ed8;
+  --r-selection-background-color: #dbeafe;
+  --accent: #2563eb;
+  --muted: #6b7280;
+  --subtle: #e5e7eb;
+  --surface: #f9fafb;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+.reveal {
+  font-weight: 400;
+  line-height: 1.55;
+}
+
+.reveal .slides { text-align: left; }
+.reveal .slides section { padding: 40px 60px; }
+
+/* ── Headings ── */
+.reveal h1, .reveal h2, .reveal h3 {
+  margin-bottom: 0.6em;
+  line-height: 1.2;
+}
+.reveal h2 {
+  font-size: 1.3em;
+  color: var(--r-heading-color);
+}
+.reveal h3 {
+  font-size: 0.95em;
+  font-weight: 500;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.3em;
+}
+
+/* ── Section labels ── */
+.section-label {
+  font-size: 0.7em;
+  font-weight: 500;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.15em;
+  display: block;
+}
+
+/* ── Separator ── */
+.reveal h2::after {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 2px;
+  background: var(--accent);
+  margin-top: 0.35em;
+  opacity: 0.5;
+}
+
+/* No separator on title slide */
+.title-slide h2::after,
+.section-intro h2::after,
+.no-rule h2::after { display: none; }
+
+/* ── Columns ── */
+.cols { display: flex; gap: 40px; align-items: flex-start; }
+.cols-center { display: flex; gap: 40px; align-items: center; }
+.col { flex: 1; min-width: 0; }
+.col-narrow { flex: 0.6; min-width: 0; }
+.col-wide { flex: 1.4; min-width: 0; }
+.cols-3 { display: flex; gap: 30px; }
+.cols-3 > div { flex: 1; min-width: 0; }
+
+/* ── Text utilities ── */
+.muted { color: var(--muted); }
+.small { font-size: 0.8em; }
+.xsmall { font-size: 0.7em; }
+.accent { color: var(--accent); }
+.bold { font-weight: 600; }
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 0.9em; }
+.highlight { background: #fef3c7; padding: 1px 5px; border-radius: 2px; }
+.highlight-blue { background: #dbeafe; padding: 1px 5px; border-radius: 2px; }
+
+/* ── Lists ── */
+.reveal ul, .reveal ol {
+  margin-left: 0;
+  padding-left: 1.2em;
+}
+.reveal li {
+  margin-bottom: 0.35em;
+  line-height: 1.5;
+}
+.reveal li::marker { color: var(--muted); }
+
+/* ── Images ── */
+.reveal img {
+  max-width: 100%;
+  height: auto;
+  border: none !important;
+  box-shadow: none !important;
+  margin: 0;
+}
+.img-bordered {
+  border: 1px solid var(--subtle) !important;
+  border-radius: 4px;
+  padding: 8px;
+  background: var(--surface);
+}
+
+/* ── Code ── */
+.reveal pre {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65em;
+  background: #1e1e2e;
+  color: #cdd6f4;
+  padding: 16px 20px;
+  border-radius: 6px;
+  margin: 0.5em 0;
+  box-shadow: none;
+  width: 100%;
+  box-sizing: border-box;
+  line-height: 1.5;
+}
+.reveal code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.88em;
+  background: var(--surface);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+.reveal pre code {
+  background: none;
+  padding: 0;
+  font-size: 1em;
+}
+
+/* ── Callout box ── */
+.callout {
+  background: var(--surface);
+  border-left: 3px solid var(--accent);
+  padding: 14px 18px;
+  border-radius: 0 4px 4px 0;
+  margin: 0.5em 0;
+  font-size: 0.92em;
+}
+.callout-warn {
+  background: #fefce8;
+  border-left: 3px solid #ca8a04;
+  padding: 14px 18px;
+  border-radius: 0 4px 4px 0;
+  margin: 0.5em 0;
+  font-size: 0.92em;
+}
+.resource-links {
+  display: grid;
+  gap: 12px;
+  margin-top: 0.8em;
+}
+.resource-link {
+  display: block;
+  background: var(--surface);
+  border: 1px solid var(--subtle);
+  border-radius: 6px;
+  padding: 12px 16px;
+  font-size: 0.86em;
+  text-decoration: none;
+}
+.resource-link strong {
+  display: block;
+  color: var(--accent);
+  margin-bottom: 2px;
+}
+.token-flow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 0.8em;
+  font-size: 0.78em;
+}
+.token-flow > div {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--subtle);
+  border-radius: 6px;
+  padding: 10px 12px;
+  text-align: center;
+}
+.token-flow .arrow {
+  flex: 0;
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: var(--muted);
+}
+.example-box {
+  background: var(--surface);
+  border: 1px solid var(--subtle);
+  border-radius: 6px;
+  padding: 12px 14px;
+  margin: 0.5em 0;
+  font-size: 0.78em;
+}
+.example-box p {
+  margin: 0.25em 0;
+}
+.tight-table {
+  font-size: 0.72em !important;
+}
+.tight-table th,
+.tight-table td {
+  padding: 5px 8px !important;
+}
+
+/* ── Table ── */
+.reveal table {
+  font-size: 0.82em;
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0.5em 0;
+}
+.reveal th {
+  font-weight: 600;
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 2px solid var(--subtle);
+  color: var(--r-heading-color);
+}
+.reveal td {
+  padding: 7px 12px;
+  border-bottom: 1px solid var(--subtle);
+  vertical-align: top;
+}
+.reveal tr:last-child td { border-bottom: none; }
+
+/* ── Fragments: fade up softly ── */
+.reveal .fragment { transition: all 0.3s ease; }
+.reveal .fragment.visible { opacity: 1; }
+
+/* ── Title slide ── */
+.title-slide {
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+.title-slide h1 {
+  font-size: 2em;
+  font-weight: 600;
+  line-height: 1.15;
+  margin-bottom: 0.3em;
+}
+.title-slide .subtitle {
+  font-size: 1em;
+  color: var(--muted);
+  font-weight: 400;
+  margin-bottom: 1.5em;
+}
+.title-slide .meta {
+  font-size: 0.8em;
+  color: var(--muted);
+}
+
+/* ── Section intro slides ── */
+.section-intro {
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center;
+  background: #f3f4f6;
+}
+.section-intro h2 {
+  font-size: 1.6em;
+}
+.section-intro p {
+  font-size: 1em;
+  color: var(--muted);
+  max-width: 600px;
+}
+.section-intro .intro-visuals {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 1000px;
+  margin-top: 0.45em;
+}
+.section-intro .intro-images {
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  width: 100%;
+  flex: 0.82;
+}
+.section-intro .intro-images .col {
+  width: 100%;
+}
+.section-intro .intro-images img {
+  max-height: 185px;
+  object-fit: contain;
+}
+.section-intro .model-image {
+  flex: 1.18;
+}
+.section-intro .model-image img {
+  max-height: 360px;
+  object-fit: contain;
+}
+.image-triptych img {
+  max-height: 260px;
+  object-fit: contain;
+}
+.image-triptych-top {
+  display: flex;
+  justify-content: center;
+  gap: 36px;
+  align-items: center;
+}
+.image-triptych-top > div {
+  flex: 0 1 360px;
+  text-align: center;
+}
+.image-triptych-bottom {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}
+.image-triptych-bottom img {
+  max-height: 300px;
+  max-width: 720px;
+  object-fit: contain;
+}
+.compact-table {
+  font-size: 0.68em !important;
+}
+.compact-table th,
+.compact-table td {
+  padding: 5px 7px !important;
+}
+.scroll-code {
+  max-height: 220px;
+  overflow: auto;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 0.4em;
+}
+.scroll-code code {
+  white-space: pre;
+  font-size: 0.86em;
+}
+
+/* ── Live demo ── */
+#demo-container {
+  display: flex;
+  gap: 20px;
+  height: 380px;
+}
+#demo-code {
+  flex: 1;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  background: #1e1e2e;
+  color: #cdd6f4;
+  padding: 16px;
+  border-radius: 6px;
+  border: none;
+  resize: none;
+  line-height: 1.5;
+  outline: none;
+}
+#demo-output {
+  flex: 1;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  background: var(--surface);
+  padding: 16px;
+  border-radius: 6px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  color: var(--r-main-color);
+  border: 1px solid var(--subtle);
+}
+#demo-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+#demo-run {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 18px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+#demo-run:hover { background: #1d4ed8; }
+#demo-run:disabled { background: #93c5fd; cursor: wait; }
+#demo-env-status {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  padding: 5px 10px;
+  border: 1px solid var(--subtle);
+  border-radius: 4px;
+  flex: 1;
+  color: var(--muted);
+  background: var(--surface);
+}
+.demo-label {
+  font-size: 0.7em;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+/* ── Section navigation ── */
+.section-sidebar {
+  position: fixed;
+  top: 50%;
+  left: 0;
+  z-index: 40;
+  width: 220px;
+  transform: translate(-178px, -50%);
+  transition: transform 180ms ease;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+.section-sidebar:hover,
+.section-sidebar:focus-within,
+.section-sidebar.is-open {
+  transform: translate(0, -50%);
+}
+.section-sidebar-panel {
+  display: grid;
+  gap: 6px;
+  padding: 10px 10px 10px 12px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid var(--subtle);
+  border-left: none;
+  border-radius: 0 8px 8px 0;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+}
+.section-sidebar-heading {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin: 0 34px 2px 0;
+}
+.section-sidebar-list {
+  display: grid;
+  gap: 4px;
+  margin-right: 34px;
+}
+.section-sidebar-list button {
+  width: 100%;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--r-main-color);
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 6px;
+  align-items: center;
+  padding: 6px 7px;
+  text-align: left;
+  font: inherit;
+  font-size: 12px;
+  line-height: 1.2;
+}
+.section-sidebar-list button:hover,
+.section-sidebar-list button:focus {
+  background: var(--surface);
+  outline: none;
+}
+.section-sidebar-list button.is-active {
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-weight: 600;
+}
+.section-sidebar-index {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.section-sidebar-toggle {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 34px;
+  height: 96px;
+  transform: translateY(-50%);
+  border: 0;
+  border-left: 1px solid var(--subtle);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  cursor: pointer;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  padding: 0;
+}
+.section-sidebar-toggle:focus {
+  outline: 2px solid #93c5fd;
+  outline-offset: -2px;
+}
+@media print {
+  .section-sidebar { display: none; }
+}
+
+/* ── Progress bar ── */
+.reveal .progress { height: 3px; color: var(--accent); }
+
+/* ── Slide numbers ── */
+.reveal .slide-number {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  color: var(--muted);
+  background: none;
+  right: 20px;
+  bottom: 16px;
+}
+
+/* ── Print adjustments ── */
+@media print {
+  .reveal .slides section { page-break-after: always; }
+}
+</style>
+</head>
+<body>
+<nav class="section-sidebar" id="section-sidebar" aria-label="Section navigation">
+  <div class="section-sidebar-panel">
+    <div class="section-sidebar-heading">Sections</div>
+    <div class="section-sidebar-list" id="section-sidebar-list"></div>
+    <button class="section-sidebar-toggle" id="section-sidebar-toggle" type="button" aria-expanded="false" aria-controls="section-sidebar-list">Sections</button>
+  </div>
+</nav>
+<div class="reveal">
+<div class="slides">
+
+<!-- ════════════════════════════════════════════════════════
+     TITLE
+     ════════════════════════════════════════════════════════ -->
+<section class="title-slide">
+  <h1>AI for Survey Researchers<br>(Part I)</h1>
+  <div class="subtitle">When you type a prompt, what's happening?</div>
+  <div class="meta">
+    NCRM &middot; Paulo Serôdio &middot; ISER, University of Essex
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     §1 — WHAT AN LLM ACTUALLY IS
+     ════════════════════════════════════════════════════════ -->
+<section class="section-intro">
+  <span class="section-label">Section 1</span>
+  <h2>What an LLM actually is</h2>
+  <p>A function. Tokens in, probabilities out.</p>
+</section>
+
+<!-- LLM mental model images -->
+<section>
+  <span class="section-label">§1 What an LLM is</span>
+  <h2>...a generative neural network</h2>
+  <div class="image-triptych">
+    <div class="image-triptych-top">
+      <div>
+      <img src="imgs/Pasted image 20260517002341.png" class="img-bordered" alt="LLM as a function">
+      </div>
+      <div class="fragment">
+      <img src="imgs/Pasted image 20260517002414.png" class="img-bordered" alt="Tokens in, probabilities out">
+      </div>
+    </div>
+    <div class="fragment image-triptych-bottom">
+      <img src="imgs/mental-model.jpg" class="img-bordered" alt="Mental model of an LLM">
+    </div>
+  </div>
+</section>
+
+<!-- Tokenization -->
+<section>
+  <span class="section-label">§1 What an LLM is</span>
+  <h2>Tokenization</h2>
+  <div class="cols">
+    <div class="col">
+      <p>The goal is to take strings and feed them into a language model. That requires converting text into integers from a <strong>fixed vocabulary</strong>.</p>
+      <p class="fragment">Those integers are the token IDs. They are lookup keys, not meanings by themselves.</p>
+      <div class="fragment token-flow">
+        <div>string</div>
+        <div class="arrow">→</div>
+        <div>token IDs</div>
+        <div class="arrow">→</div>
+        <div>embedding vectors</div>
+        <div class="arrow">→</div>
+        <div>transformer</div>
+      </div>
+      <div class="fragment callout">
+        The model never sees raw text. It sees vectors retrieved from an embedding table.
+      </div>
+    </div>
+    <div class="col">
+      <img src="imgs/Pasted image 20260602124222.png" class="img-bordered" alt="Tokenization encode/decode cycle">
+      <p class="fragment small muted" style="margin-top:0.5em">The same text round-trips: encode → integer IDs → decode. The model never sees raw text.</p>
+      <p class="fragment xsmall" style="margin-top:0.7em"><a href="https://tiktokenizer.vercel.app/" target="_blank">Tiktokenizer app</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- Tokenization: why it matters -->
+<section>
+  <span class="section-label">§1 What an LLM is</span>
+  <h2>Why tokenization matters</h2>
+  <div class="cols">
+    <div class="col">
+      <p>Many behaviours that look like model intelligence failures trace back to the input representation.</p>
+      <ul>
+        <li class="fragment">Why can't LLMs spell or reverse strings reliably? <strong>Tokenization.</strong></li>
+        <li class="fragment">Why are simple arithmetic and punctuation-heavy formats awkward? <strong>Tokenization.</strong></li>
+        <li class="fragment">Why can non-English text cost more and perform worse? <strong>Tokenization.</strong></li>
+        <li class="fragment">Why can special strings such as <code>&lt;|endoftext|&gt;</code> behave oddly? <strong>Tokenization.</strong></li>
+      </ul>
+    </div>
+    <div class="col">
+      <div class="fragment callout">
+        Tokenization lies at the heart of many unexpected LLM behaviours. The neural network may be fine; the representation it receives may be awkward.
+      </div>
+      <div class="fragment callout-warn">
+        Practical payoff: inspect tokenization before blaming the model, especially for survey items with jargon, code, tables, non-English text, or unusual punctuation.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Tokenization: tokenizer construction -->
+<section>
+  <span class="section-label">§1 What an LLM is</span>
+  <h2>How tokenizers are built</h2>
+  <div class="cols">
+    <div>
+      <img src="imgs/Pasted image 20260517003445.png" alt="Tokenizer training: BPE process">
+      <p class="xsmall muted" style="margin-top:0.4em">Character-level tokenization is the naive baseline. BPE starts small, then repeatedly merges frequent adjacent pieces.</p>
+    </div>
+    <div>
+      <img src="imgs/Pasted image 20260517003504.png" alt="Unusual words tokenization" class="fragment">
+      <p class="fragment xsmall muted" style="margin-top:0.4em">Unusual words get split into more sub-word pieces — more tokens, higher cost, weaker representation.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Tokenization: vocabulary -->
+<section>
+  <span class="section-label">§1 What an LLM is</span>
+  <h2>How does vocabulary work?</h2>
+  <div class="cols">
+    <div class="col">
+      <p>A vocabulary is the tokenizer's fixed menu of possible <strong>token types</strong>. Tokenizers turn text into <strong>token IDs</strong>: integer numbers from that vocabulary.</p>
+      <div class="fragment example-box">
+        <p><strong>Small vocabulary:</strong> <code>["q", "u", "e", "n", "k", "i", "g"]</code></p>
+        <p><code>queen</code> → <code>q + u + e + e + n</code> = 5 token instances</p>
+      </div>
+      <div class="fragment example-box">
+        <p><strong>Larger vocabulary:</strong> <code>["queen", "king", "Elizabeth", "Charles"]</code></p>
+        <p><code>queen</code> → <code>queen</code> = 1 token instance</p>
+      </div>
+    </div>
+    <div class="col">
+      <img src="imgs/Pasted image 20260517002746.png" alt="Vocabulary size comparison" class="img-bordered" style="max-height:300px; object-fit:contain">
+      <table class="fragment tight-table">
+        <thead>
+          <tr><th>Tokenizer type</th><th>Vocabulary size</th><th>Tokens needed</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Character-level</td><td>Small</td><td>Many</td></tr>
+          <tr><td>Word/subword-level</td><td>Larger</td><td>Fewer</td></tr>
+        </tbody>
+      </table>
+      <div class="fragment callout-warn" style="padding:10px 14px; margin-top:0.35em">
+        Larger vocabulary = more possible tokens, but shorter token sequences. Smaller vocabulary = fewer possible tokens, but longer token sequences.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Tokenization: model differences -->
+<section>
+  <span class="section-label">§1 What an LLM is</span>
+  <h2>Why do models do/count tokens differently?</h2>
+  <div class="cols">
+    <div class="col">
+      <p>Tokenizers are design decisions. They are optimized around the model's training data, target languages, code support, context length, and deployment cost.</p>
+      <p class="fragment">Because models do tokenization differently, they also <strong>count</strong> tokens differently: the same text can become different chunks before the neural network runs.</p>
+      <ul>
+        <li class="fragment">Vocabulary size and training corpus</li>
+        <li class="fragment">Language, code, whitespace, and punctuation priorities</li>
+        <li class="fragment">Special tokens and provider chat-message wrappers</li>
+      </ul>
+      <p class="fragment muted small">GPT-2 struggled more than necessary with Python partly because its tokenizer handled whitespace poorly. Newer tokenizers encode code and multilingual text more efficiently.</p>
+    </div>
+    <div class="col">
+      <img src="imgs/Pasted image 20260517002103.png" alt="Charged by token" style="max-width:500px" class="img-bordered">
+      <p class="fragment xsmall muted" style="margin-top:0.4em">Input and output tokens are priced differently. Output tokens cost more, so tokenization directly affects budgets.</p>
+      <div class="fragment callout-warn">
+        Rule of thumb: if the task depends on exact characters, spelling, formatting, or multilingual nuance, inspect the tokens.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Embeddings -->
+<section>
+  <span class="section-label">§1 What an LLM is</span>
+  <h2>Embeddings</h2>
+  <div class="cols">
+    <div class="col">
+      <p>After tokenisation, each token ID is used to look up a vector in the model's <strong>embedding table</strong>.</p>
+      <p class="fragment">This vector is the token's starting representation before the transformer layers process it.</p>
+      <p class="fragment">The embedding table starts randomly and is learned during pre-training. Tokens that appear in similar contexts tend to acquire related vectors.</p>
+    </div>
+    <div class="col">
+      <ol class="small">
+        <li class="fragment">Build tokenizer vocabulary: e.g. 5,000 token types</li>
+        <li class="fragment">Assign each token type an integer ID: IDs 0 to 4,999</li>
+        <li class="fragment">Create embedding table: 5,000 rows × 768 columns</li>
+        <li class="fragment">Initialise the table with small random values</li>
+        <li class="fragment">Train the model</li>
+        <li class="fragment">Backpropagation updates the table values</li>
+        <li class="fragment">After training, each token ID has a learned 768-dimensional vector</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- Transformers -->
+<section>
+  <span class="section-label">§1 What an LLM is</span>
+  <h2>Transformers</h2>
+  <div class="cols">
+    <div class="col">
+      <p>A transformer is the building block underneath GPT-style language models. It takes a sequence of token embeddings and repeatedly updates each token's representation using the surrounding context.</p>
+      <p class="fragment">The key idea is <strong>attention</strong>: each token can weight other tokens in the context when deciding what information matters.</p>
+      <p class="fragment">Stack many transformer layers, train them to predict the next token, and you get the core architecture behind modern LLMs.</p>
+      <div class="fragment callout" style="margin-top:1em">
+        We only need the mental model here: tokens become vectors, vectors pass through transformer layers, and the output becomes next-token probabilities.
+      </div>
+    </div>
+    <div class="col">
+      <img src="imgs/gpt-oss-20b.webp" class="img-bordered" alt="gpt-oss-20b transformer architecture" style="max-height:340px; object-fit:contain; margin-bottom:0.7em">
+      <div class="resource-links">
+        <a class="resource-link fragment" href="https://poloclub.github.io/transformer-explainer/" target="_blank">
+          <strong>Transformer Explainer</strong>
+          Interactive attention and next-token visualisation.
+        </a>
+        <a class="resource-link fragment" href="https://bbycroft.net/llm" target="_blank">
+          <strong>LLM architecture</strong>
+          Visual gallery of modern LLM architectures.
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Transformers: tokenized data -->
+<section>
+  <span class="section-label">§1 What an LLM is</span>
+  <h2>Pre-training starts with token IDs</h2>
+  <div class="cols">
+    <div class="col">
+      <p>Here is an example from FineWeb1. The dataset has been tokenized with a vocabulary of <strong>100,277 token types</strong>.</p>
+      <p class="fragment">The text is now a long sequence of integer token IDs. Those IDs are what the model trains on.</p>
+    </div>
+    <div class="col-wide">
+      <img src="imgs/transformers1.png" class="img-bordered" alt="FineWeb1 text tokenized into token IDs" style="max-height:390px; object-fit:contain">
+    </div>
+  </div>
+</section>
+
+<!-- Transformers: next-token training windows -->
+<section>
+  <span class="section-label">§1 What an LLM is</span>
+  <h2>Training uses windows of tokens</h2>
+  <div class="cols">
+    <div class="col">
+      <p>The neural network takes windows of token IDs and learns to predict the next token.</p>
+      <p class="fragment">In this example, the first four tokens are used as context to predict the 5th token.</p>
+      <p class="fragment">A larger window means a larger <strong>context size</strong>: the model can pay attention to more previous tokens when making the next prediction.</p>
+    </div>
+    <div class="col-wide">
+      <img src="imgs/transformers2.png" class="img-bordered" alt="Training window predicts the next token" style="max-height:390px; object-fit:contain">
+    </div>
+  </div>
+</section>
+
+<!-- Transformers: weights to probabilities -->
+<section>
+  <span class="section-label">§1 What an LLM is</span>
+  <h2>Weights turn context into probabilities</h2>
+  <div class="cols">
+    <div class="col">
+      <p>During pre-training, backpropagation updates the network weights to increase the probability of the correct next token.</p>
+      <p class="fragment">At each step, the model outputs one probability for every possible token in the vocabulary.</p>
+      <p class="fragment">The mathematical expression combines the input token IDs with the learned weights to produce those probabilities.</p>
+    </div>
+    <div class="col-wide">
+      <img src="imgs/transformers3.png" class="img-bordered" alt="Network weights produce next-token probabilities" style="max-height:390px; object-fit:contain">
+    </div>
+  </div>
+</section>
+
+<!-- Transformer + next-token prediction -->
+<section>
+  <span class="section-label">§1 What an LLM is</span>
+  <h2>Next-token prediction</h2>
+  <div class="cols">
+    <div class="col">
+      <p>The transformer takes the entire sequence of token embeddings and, at each step, predicts a <strong>probability distribution</strong> over the next token.</p>
+      <img src="imgs/Pasted image 20260606032939.png" class="img-bordered" alt="Autoregressive generation loop" style="max-height:210px; object-fit:contain; margin:0.5em 0 0.7em">
+      <p class="fragment">It generates one token at a time. At each step it looks at the prompt plus everything it has already generated, picks a token, appends it, and repeats.</p>
+      <div class="fragment callout">
+        <strong>Autoregressive:</strong> looking backwards only. No lookahead, no planning. Each token is conditioned on all previous tokens.
+      </div>
+    </div>
+    <div class="col">
+      <img src="imgs/Pasted image 20260606042010.png" class="img-bordered fragment" alt="DeepSeek next-token probabilities">
+      <p class="fragment xsmall muted">DeepSeek V3.1 at temperature&nbsp;0. "garage" wins at 85%, but "boardroom" (4%), "corporate" (3%) were candidates. Tiny logit differences can flip the choice.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Temperature + sampling -->
+<section>
+  <span class="section-label">§1 What an LLM is</span>
+  <h2>Temperature and sampling</h2>
+  <div class="cols">
+    <div class="col">
+      <p>The model produces logits (raw scores) for every token in the vocabulary. <strong>Temperature</strong> controls how those logits are converted to probabilities:</p>
+      <ul>
+        <li class="fragment"><strong>Temperature 0</strong> — always pick the highest-probability token (greedy). Deterministic <em>in theory</em>.</li>
+        <li class="fragment"><strong>Temperature 0.5–0.7</strong> — moderate variation. Good for most tasks.</li>
+        <li class="fragment"><strong>Temperature 1.0+</strong> — flatter distribution, more creative, less predictable.</li>
+      </ul>
+    </div>
+    <div class="col">
+      <p class="fragment"><strong>Other sampling parameters:</strong></p>
+      <ul class="fragment">
+        <li><strong>top-p</strong> (nucleus) — only consider tokens whose cumulative probability reaches <em>p</em></li>
+        <li><strong>top-k</strong> — only consider the <em>k</em> most probable tokens</li>
+        <li><strong>seed</strong> — attempt reproducibility (provider-dependent)</li>
+      </ul>
+      <div class="fragment callout-warn">
+        <strong>Temperature 0 ≠ deterministic in practice.</strong> We'll see why in §5.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stateless -->
+<section>
+  <span class="section-label">§1 What an LLM is</span>
+  <h2>Stateless</h2>
+  <div class="cols">
+    <div class="col-wide">
+      <p>Every API call to an LLM is <strong>stateless</strong>: no memory, no continuity, no knowledge of what happened before unless it is explicitly provided again.</p>
+      <p class="fragment">ChatGPT and similar systems can feel as if the model remembers past conversations. That memory is an application illusion. The model only sees what is inside the current request; any "memory" is previous messages, saved notes, or summaries being resent as context.</p>
+      <p class="fragment">Because the model itself is stateless, intelligence shifts upward into the application. The application decides what to include, what to exclude or summarise, what to retrieve and prioritise, and what to forget.</p>
+    </div>
+    <div class="col-narrow fragment">
+      <div class="callout">
+        <strong>For research:</strong>
+        <ul class="small" style="margin-top:0.4em">
+          <li>Conversation history = part of the prompt</li>
+          <li>Earlier turns influence later outputs</li>
+          <li>Compaction (summarising old turns) changes behaviour invisibly</li>
+          <li>Cost scales with context length</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════
+     §2 — HOW MODELS ARE TRAINED
+     ════════════════════════════════════════════════════════ -->
+<section class="section-intro">
+  <span class="section-label">Section 2</span>
+  <h2>How models are trained</h2>
+  <p>Every training decision leaks into your research outputs.</p>
+</section>
+
+<!-- Pre-training -->
+<section>
+  <span class="section-label">§2 How models are trained</span>
+  <h2>Pre-training</h2>
+  <div class="cols">
+    <div class="col">
+      <p>Base models are trained via self-supervised learning: <strong>predict the next token</strong> across an enormous text corpus.</p>
+      <p class="fragment">This is how knowledge gets compressed into the model. Training can cost hundreds of millions or even billions of dollars in compute: terabytes of text are compressed into a particular parameter shape that can generate text programmatically.</p>
+      <p class="fragment">They learn language patterns and broad world knowledge, but are not tuned to follow instructions. A base model will <em>complete</em> your text, not <em>answer</em> your question.</p>
+      <div class="fragment callout-warn">
+        Pre-trained models reproduce patterns in their training data — including harmful or biased content. They have no alignment, no safety layer, no instruction-following.
+      </div>
+    </div>
+    <div class="col fragment">
+      <p class="bold">What's in the corpus matters:</p>
+      <ul class="small">
+        <li>Predominantly English, predominantly Western internet</li>
+        <li>Non-English text is underrepresented → weaker multilingual performance</li>
+        <li>Survey data, interview transcripts, qualitative research are <em>almost entirely absent</em></li>
+        <li>The corpus is the primary source of demographic and ideological skew</li>
+      </ul>
+      <img src="imgs/pretraining.png" alt="Pre-training process" class="fragment img-bordered" style="max-height:165px; object-fit:contain; margin-top:0.4em">
+    </div>
+  </div>
+  <div class="resource-links fragment" style="max-width:620px; margin-top:0.9em">
+    <a class="resource-link" href="https://huggingface.co/meta-llama/Llama-3.2-1B?inference_provider=featherless-ai" target="_blank">
+      <strong>Experiment with a base model</strong>
+      Llama 3.2 1B base model: pre-trained, not instruction fine-tuned.
+    </a>
+  </div>
+</section>
+
+<!-- SFT -->
+<section>
+  <span class="section-label">§2 How models are trained</span>
+  <h2>Supervised instruction tuning (SFT)</h2>
+  <div class="cols">
+    <div class="col-wide">
+      <p>The first post-training step. Fine-tune the base model on curated <span class="highlight">instruction → response</span> pairs written by humans.</p>
+      <p class="fragment">Quality over quantity: relatively small, high-quality datasets yield strong instruction following. This is imitation learning — the model learns to mimic the demonstrations.</p>
+      <div class="fragment">
+        <p class="bold" style="margin-bottom:0.2em">After SFT:</p>
+        <ul class="small">
+          <li>More coherent, helpful responses</li>
+          <li>But: inherits biases of the demonstration data</li>
+          <li>May still hallucinate, refuse inappropriately, or ignore safety</li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-narrow fragment">
+      <img src="imgs/finetuning.png" alt="Fine-tuning process" class="img-bordered" style="width:455px; max-width:none; transform:translateX(-150px); object-fit:contain; margin-bottom:0.6em">
+      <div class="callout">
+        <strong>For research:</strong> SFT data is curated by humans with their own cultural priors. If your task relies on the model's "opinions" or "judgments", those judgments originate partly here.
+      </div>
+    </div>
+  </div>
+  <div class="resource-links fragment" style="max-width:680px; margin-top:0.9em">
+    <a class="resource-link" href="https://huggingface.co/datasets/Josephgflowers/Finance-Instruct-500k/viewer/default/train?row=0" target="_blank">
+      <strong>Example instruction-tuning dataset</strong>
+      Finance-Instruct-500k on Hugging Face.
+    </a>
+  </div>
+</section>
+
+<!-- Preference-based alignment -->
+<section>
+  <span class="section-label">§2 How models are trained</span>
+  <h2>Reinforcement learning from human feedback</h2>
+  <p class="muted small" style="margin-top:-0.3em">RLHF as the central alignment loop</p>
+  <div class="cols" style="margin-top:0.5em">
+    <div class="col">
+      <p class="small"><strong>RLHF</strong> is used for domains where the desired output is partly normative or judgement-based. In many tasks, we do not just want a factually correct answer; we want an answer that is useful, safe, calibrated, non-toxic, non-deceptive, and appropriate to the user's request.</p>
+      <p class="fragment small">The key object in reinforcement learning is the <strong>policy</strong>: the system being trained to choose actions. In an LLM, the policy is the model itself. It takes the current context — prompt plus generated tokens — and produces a probability distribution over the next token.</p>
+      <p class="fragment small">Each generated answer is a trajectory through this policy. The model chooses one token, appends it to the context, chooses the next token, and repeats. RLHF updates the model weights so trajectories judged to be better become more probable in future.</p>
+      <p class="fragment small">The reward signal usually comes indirectly. Humans compare candidate answers; a reward model learns to predict those preferences; reinforcement learning then optimises the LLM against that reward model. The result is a model whose probability distribution has shifted towards preferred forms of behaviour.</p>
+    </div>
+    <div class="col fragment">
+      <img src="imgs/alignment.png" alt="Alignment diagram" class="img-bordered" style="max-height:360px; object-fit:contain">
+      <div class="callout-warn">
+        <strong>What is being reinforced?</strong> Not truth directly, but behaviours that score well under a reward model trained from human comparisons.
+      </div>
+      <p class="xsmall muted">Related post-training methods: DPO, RLAIF, RLVR/GRPO.</p>
+    </div>
+  </div>
+</section>
+
+<!-- RLHF steps -->
+<section>
+  <span class="section-label">§2 How models are trained</span>
+  <h2>The three steps of RLHF</h2>
+  <div class="cols-3" style="margin-top:0.5em">
+    <div>
+      <img src="imgs/rlhf1.png" alt="RLHF step 1" class="img-bordered" style="max-height:220px; object-fit:contain">
+      <h3>1. Supervised warm start</h3>
+      <p class="small">Sample prompts and ask humans to write good responses. These demonstrations fine-tune the pre-trained base model in a supervised way.</p>
+    </div>
+    <div class="fragment">
+      <img src="imgs/rlhf2.png" alt="RLHF step 2" class="img-bordered" style="max-height:220px; object-fit:contain">
+      <h3>2. Reward model</h3>
+      <p class="small">Generate several answers per prompt from the SFT model. Humans rank them; those rankings train a reward model that predicts preference scores.</p>
+    </div>
+    <div class="fragment">
+      <img src="imgs/rlhf3.png" alt="RLHF step 3" class="img-bordered" style="max-height:220px; object-fit:contain">
+      <h3>3. Policy optimisation</h3>
+      <p class="small">Use the reward model to update the SFT model, often with PPO, so higher-scoring responses become more likely while the model stays close to its starting behaviour.</p>
+    </div>
+  </div>
+</section>
+
+<!-- RLVR / GRPO -->
+<section>
+  <span class="section-label">§2 How models are trained</span>
+  <h2>Verifiable rewards</h2>
+  <p class="muted small" style="margin-top:-0.3em">RLVR &middot; GRPO</p>
+  <div class="cols">
+    <div class="col">
+      <p><strong>RLVR</strong> uses tasks where correctness can be objectively verified: maths, code, logic. A deterministic verifier returns binary reward — 1 if correct, 0 otherwise.</p>
+      <p class="fragment">No human or AI labellers. No subjective bias. Research shows RLVR implicitly incentivises correct chain-of-thought reasoning — because the only way to <em>consistently</em> get right answers is to produce valid intermediate steps.</p>
+      <p class="fragment small">Post-training is how we get LLMs to behave in particular ways. It refines behaviour after pre-training, and has been more productive than many expected.</p>
+    </div>
+    <div class="col fragment">
+      <p><strong>GRPO</strong> (Group Relative Policy Optimisation) supports RLVR at scale. It estimates advantages without training a separate critic: multiple rollouts per prompt are grouped and whitened to compute relative advantage.</p>
+      <div class="callout" style="margin-top:0.8em">
+        <strong>Why this matters:</strong> RLHF and RLVR can train models into better long tool-call runs, agent runs, coding, and reasoning. Cursor's Composer 2/2.5, for example, is reported by Cursor as a post-trained system built from Moonshot's Kimi K2.5 checkpoint, not a wholly new model trained from scratch.
+      </div>
+      <p class="fragment small muted">Post-training is usually cheaper than pre-training, but not always: high-compute RL systems can still be extremely expensive.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Training → Research lens -->
+<section>
+  <span class="section-label">§2 How models are trained</span>
+  <h2 class="no-rule">What does training mean for research?</h2>
+  <div class="cols" style="margin-top:0.5em">
+    <div class="col">
+      <p class="small">Figure 2 shows that LLM personas place far more variance on the first principal component than human GSS respondents, meaning their answers collapse too strongly onto a single ideological axis.</p>
+      <p class="small fragment">This is the kind of unidimensionality we should expect from alignment-style post-training: models are rewarded for coherent, normatively legible responses, but real people hold messier, cross-cutting, and only weakly constrained belief systems.</p>
+      <p class="xsmall muted fragment">Source: "Synthetic personas distort the structure of human belief systems" by Chris Barrie.</p>
+    </div>
+    <div class="col fragment">
+      <img src="imgs/unidimensional_beliefs.png" alt="LLM personas show more unidimensional belief structure than human respondents" class="img-bordered" style="max-height:500px; object-fit:contain">
+    </div>
+  </div>
+</section>
+
+<!-- Training risks -->
+<section>
+  <span class="section-label">§2 How models are trained</span>
+  <h2 class="no-rule">Training risks for research</h2>
+  <div class="cols-3" style="margin-top:0.5em">
+    <div class="callout">
+      <h3>Corpus bias</h3>
+      <p class="small">The model's "knowledge" is the training data. If a population, language, or domain is underrepresented, outputs will be weaker — or confidently wrong.</p>
+    </div>
+    <div class="callout-warn fragment">
+      <h3>Alignment artefacts</h3>
+      <p class="small">Sycophancy, refusal, verbosity are not bugs — they're trained behaviours. They will systematically affect any study that treats model outputs as data.</p>
+    </div>
+    <div class="callout fragment">
+      <h3>Opacity</h3>
+      <p class="small">Training data is undisclosed. Alignment methods are partially documented. You cannot fully audit the instrument you are using. <strong>Report what you can; acknowledge what you can't.</strong></p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════
+     §3 — INFERENCE
+     ════════════════════════════════════════════════════════ -->
+<section class="section-intro">
+  <span class="section-label">Section 3</span>
+  <h2>Inference</h2>
+  <p>Where computation happens, and how models reason at answer time.</p>
+</section>
+
+<!-- What is inference + where -->
+<section>
+  <span class="section-label">§3 Inference</span>
+  <h2>Where inference happens</h2>
+  <p class="small">To run a model locally, you need access to the model's <strong>weights</strong>: the trained numerical parameters that encode what the model learned. Open-weight models make those parameters downloadable under a licence; closed models keep them inside the provider's infrastructure.</p>
+  <div class="cols-3">
+    <div>
+      <h3>Local</h3>
+      <p class="small">Run the model on your own hardware. Ollama, llama.cpp, vLLM. <strong>Your data never leaves your machine.</strong></p>
+      <p class="small muted">Requires a capable GPU. Limited to open-weights models.</p>
+    </div>
+    <div class="fragment">
+      <h3>Provider cloud</h3>
+      <p class="small">OpenAI, Anthropic, Google host the model. You send data to their servers. Subject to their data retention and usage policies.</p>
+      <p class="small muted">Easiest option. Best models available here.</p>
+    </div>
+    <div class="fragment">
+      <h3>Re-hosted</h3>
+      <p class="small">Azure OpenAI, AWS Bedrock, GCP Vertex. Same models, hosted in <em>your</em> cloud region with enterprise data controls.</p>
+      <p class="small muted">Zero-retention options. GDPR-compliant deployments possible.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Open vs closed weights -->
+<section>
+  <span class="section-label">§3 Inference</span>
+  <h2>Open weights vs closed weights</h2>
+  <div>
+      <table class="compact-table">
+        <thead>
+          <tr><th>Dimension</th><th>Open-weight models</th><th>Closed/proprietary models</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="bold">Examples</td><td>DeepSeek V3/V4/R1, Qwen3/Qwen3.5, Kimi K2/K2.6, GLM-4.5/GLM-5, Llama 4, Mistral</td><td>GPT-5.5, Claude Opus 4.8, Gemini 3.5</td></tr>
+          <tr><td class="bold">Where they run</td><td>Local machine, institutional server, private cloud, or third-party inference provider</td><td>Provider-hosted service/API</td></tr>
+          <tr><td class="bold">Access to weights</td><td>Model weights are downloadable, subject to licence</td><td>Weights are not available</td></tr>
+          <tr><td class="bold">Data control</td><td>High if self-hosted; lower if using hosted inference</td><td>Depends on provider terms, contract, logging and retention settings</td></tr>
+          <tr><td class="bold">Reproducibility</td><td>Stronger if model, tokenizer, quantisation, runtime and prompts are pinned</td><td>Weaker: provider may update, retire, or alter models/API behaviour</td></tr>
+          <tr><td class="bold">Auditability</td><td>Better: model artefacts and deployment can be inspected/versioned</td><td>Limited: model internals and system changes are mostly opaque</td></tr>
+          <tr><td class="bold">Performance</td><td>Often competitive; usually behind frontier models on hardest tasks</td><td>Best frontier capability usually here</td></tr>
+          <tr><td class="bold">Cost/effort</td><td>More setup, hardware and maintenance</td><td>Easier to use; pay per use/subscription</td></tr>
+          <tr><td class="bold">Best use case</td><td>Sensitive data, reproducible pipelines, institutional control</td><td>Highest performance, rapid prototyping, general-purpose assistance</td></tr>
+        </tbody>
+      </table>
+  </div>
+</section>
+
+<!-- In-context learning -->
+<section>
+  <span class="section-label">§3 Inference</span>
+  <h2>Models are NOT trained at inference time</h2>
+  <div class="cols">
+    <div class="col">
+      <p>Learning during inference — <strong>in-context learning</strong> — does <strong>not</strong> change model weights. It changes the context the model conditions on: instructions, prompts, examples, retrieved documents, and prior messages.</p>
+      <p class="fragment">Parametric learning updates weights. In-context learning does not — and it absolutely works. Transformers are conditional next-token predictors over a sequence; give them the right sequence and behaviour can change radically without touching the parameters.</p>
+      <div class="fragment callout">
+        <strong>Zero-shot:</strong> "Classify this review as positive or negative."<br>
+        <strong>Few-shot:</strong> "Here are 5 examples. Now classify this one."<br>
+        <strong>Many-shot:</strong> 50+ examples in context (only feasible with large context windows).
+      </div>
+    </div>
+    <div class="col fragment">
+      <p class="bold">This is the foundation of prompt engineering:</p>
+      <p class="small">The intelligence lives in the static parameters, but the apparent capability depends heavily on what is fed into the context window. Context management, prompt engineering, instruction tuning, and few-shot examples exploit that fact.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Reasoning: inference-time compute + CoT -->
+<section>
+  <span class="section-label">§3 Inference</span>
+  <h2>Reasoning and inference-time compute</h2>
+  <div class="cols">
+    <div class="col">
+      <p class="small">Early chatbots mostly tried to answer directly: prompt in, answer out.</p>
+      <p class="fragment small">Reasoning models change the allocation of compute. They spend more inference-time computation before producing the final answer: decomposing the problem, checking constraints, exploring alternatives, or using tools.</p>
+      <p class="fragment small">This does not require a separate symbolic reasoner. Mechanically, the model is still generating tokens. What changes is that some tokens are used to structure the path to the answer, not just to state the answer.</p>
+      <p class="fragment small">Chain-of-thought was the first visible version of this idea. Modern reasoning models often perform some of this intermediate work in hidden reasoning tokens.</p>
+    </div>
+    <div class="col">
+      <img src="imgs/Pasted image 20260606033055.png" class="img-bordered" alt="Hidden reasoning tokens flow" style="max-height:250px; object-fit:contain">
+      <p class="xsmall muted" style="margin-top:0.4em">User prompt → hidden reasoning tokens → visible answer tokens. The reasoning is trained, not emergent.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Reasoning types + thinking modes -->
+<section>
+  <span class="section-label">§3 Inference</span>
+  <h2>Reasoning strategies and thinking modes</h2>
+  <div class="cols">
+    <div class="col">
+      <h3>Strategies</h3>
+      <p class="small">Reasoning strategies are different ways of using extra inference-time computation.</p>
+      <ul>
+        <li class="fragment"><strong>Step-by-step reasoning</strong> — generate intermediate steps before answering</li>
+        <li class="fragment"><strong>Self-consistency</strong> — sample several reasoning paths and compare the answers</li>
+        <li class="fragment"><strong>Tree-of-thoughts</strong> — branch across possible solution paths and evaluate them</li>
+        <li class="fragment"><strong>Verifier or reward model</strong> — generate candidate answers, then score or select among them</li>
+      </ul>
+      <p class="fragment small muted" style="margin-top:0.5em">The common pattern is the same: the system spends more computation before committing to an answer.</p>
+    </div>
+    <div class="col">
+      <h3 class="fragment">Thinking intensity</h3>
+      <div class="fragment callout">
+        Thinking intensity controls the reasoning budget: how much intermediate computation the system can spend before answering. More is not always better. On simple tasks, extra search can introduce delay, cost, or unnecessary complications.
+      </div>
+      <div class="fragment callout" style="margin-top:0.5em">
+        <strong>Adaptive thinking</strong> is the next step: the system decides how much reasoning a request deserves, instead of the user picking a fixed budget.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ReAct + what breaks the loop -->
+<section>
+  <span class="section-label">§3 Inference</span>
+  <h2>From reasoning to acting</h2>
+  <div class="cols">
+    <div class="col">
+      <p>Reasoning becomes more powerful when the model can call tools.</p>
+      <p class="fragment"><strong>ReAct</strong> means reasoning + acting: the model alternates between internal reasoning and external actions, such as searching the web, querying a database, running code, or retrieving documents.</p>
+      <p class="fragment"><strong>PAL</strong> means Program-Aided Language Models: instead of solving everything in natural language, the model writes code and lets a reliable executor do the calculation.</p>
+      <p class="fragment small">This is the bridge from chatbots to agents: inference is no longer just text generation; it becomes a loop of thinking, acting, observing, and deciding when to stop.</p>
+    </div>
+    <div class="col fragment">
+      <h3>What breaks the reasoning loop?</h3>
+      <p class="small">Decoding stops when:</p>
+      <ul class="small">
+        <li>The model emits an <strong>end marker</strong></li>
+        <li>The backend detects the final-answer channel has begun</li>
+        <li>A <strong>reasoning-token limit</strong> is reached</li>
+        <li>The <strong>output-token limit</strong> is reached</li>
+        <li>The model hits the maximum <strong>context window</strong></li>
+      </ul>
+      <div class="callout-warn" style="margin-top:0.5em">
+        If the model runs out of tokens mid-reasoning, the answer may be truncated or degraded. This is silent — you won't necessarily know it happened unless you check the usage metadata.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Inference → Research lens -->
+<section>
+  <span class="section-label">§3 Inference</span>
+  <h2 class="no-rule">Why is inference relevant for research?</h2>
+  <p class="small">Inference is not a neutral button press. The same model can behave differently depending on the prompt, context, tools, reasoning budget, sampling settings, and provider implementation.</p>
+  <div class="cols-3" style="margin-top:0.5em">
+    <div class="fragment callout">
+      <h3>Cost</h3>
+      <p class="small">Reasoning tokens, tool calls, and long contexts make inference more expensive than a simple prompt-response exchange.</p>
+    </div>
+    <div class="fragment callout">
+      <h3>Reproducibility</h3>
+      <p class="small">"We used GPT-4" is not enough. Results can depend on model version, prompt, settings, tool access, context window, retrieval corpus, and date of access.</p>
+    </div>
+    <div class="fragment callout-warn">
+      <h3>Data governance</h3>
+      <p class="small">Local inference can keep data inside your infrastructure; cloud inference sends data to a provider or hosted service.</p>
+    </div>
+  </div>
+  <div class="fragment callout" style="margin-top:0.7em">
+    <strong>Auditability:</strong> if reasoning, retrieval, or tool use is hidden, researchers need logs, metadata, prompts, model versions, and validation checks to understand what happened.
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════
+     §4 — MODES OF INTERACTING
+     ════════════════════════════════════════════════════════ -->
+<section class="section-intro">
+  <span class="section-label">Section 4</span>
+  <h2>Modes of interacting with LLMs</h2>
+  <p>What you control — and what you don't — at each layer.</p>
+</section>
+
+<!-- Consumer chatbot -->
+<section>
+  <span class="section-label">§4 Modes of interaction</span>
+  <h2>Consumer chatbot</h2>
+  <div class="cols">
+    <div class="col">
+      <p>ChatGPT, Claude.ai, Gemini: the interface most people use. But the interaction is not just "you + model".</p>
+      <p class="small">On every turn, the app may add or change things you do not see:</p>
+      <ul class="small">
+        <li class="fragment"><strong>System instructions</strong> — hidden rules and priorities shape the answer</li>
+        <li class="fragment"><strong>Model routing / model version</strong> — the same product name may point to different model snapshots over time</li>
+        <li class="fragment"><strong>Conversation management</strong> — long chats may be summarised, truncated, or compacted</li>
+        <li class="fragment"><strong>Tool orchestration</strong> — search, file reading, code execution, image analysis, or retrieval may be invoked by the product layer</li>
+        <li class="fragment"><strong>Memory and personalisation</strong> — prior preferences or stored context may be injected into the current chat</li>
+        <li class="fragment"><strong>Safety and policy layers</strong> — outputs may be filtered, rewritten, or refused outside the visible prompt</li>
+      </ul>
+    </div>
+    <div class="col fragment">
+      <div class="callout">
+        <strong>What this means for research use</strong>
+        <p class="small" style="margin-top:0.45em">You often cannot fully observe or fix:</p>
+        <ul class="small">
+          <li>the exact system prompt</li>
+          <li>the model snapshot</li>
+          <li>hidden retrieval or tool calls</li>
+          <li>how much history was retained</li>
+          <li>whether memory/personalisation was used</li>
+          <li>the decoding and serving configuration</li>
+          <li>product-side updates between runs</li>
+        </ul>
+      </div>
+      <div class="callout-warn" style="margin-top:0.8em">
+        <strong>A consumer chatbot is a product interface, not a controlled research instrument.</strong>
+        <p class="small" style="margin-top:0.4em">You can study chatbot interactions, but you cannot assume they are exactly reproducible unless the platform exposes and fixes the relevant configuration.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- API -->
+<section>
+  <span class="section-label">§4 Modes of interaction</span>
+  <h2>The API</h2>
+  <p>Direct access to the model. You send a JSON request, you get a JSON response. <strong>Nothing hidden.</strong></p>
+  <div class="cols" style="margin-top:0.3em">
+    <div class="col">
+      <div class="fragment">
+        <p class="bold" style="margin-bottom:0.2em">You control:</p>
+        <ul class="small">
+          <li>Model name + snapshot version</li>
+          <li>System prompt (verbatim)</li>
+          <li>Temperature, top-p, max tokens</li>
+          <li>Whether tools are available</li>
+          <li>Structured output schemas</li>
+        </ul>
+      </div>
+    </div>
+    <div class="col">
+      <div class="fragment">
+        <p class="bold" style="margin-bottom:0.2em">You get back:</p>
+        <ul class="small">
+          <li>The full response</li>
+          <li>Token usage (input, output, reasoning)</li>
+          <li>Stop reason</li>
+          <li>Model fingerprint / ID</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <pre class="fragment scroll-code"><code>curl https://api.openai.com/v1/responses \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-5.1",
+    "input": [
+      {
+        "role": "developer",
+        "content": "You are a survey methodologist. Review survey questions for clarity, bias, construct validity, recall burden, and response option problems."
+      },
+      {
+        "role": "user",
+        "content": "Review this survey question: In the last 12 months, how often have you used AI tools such as ChatGPT, Claude, Gemini, or Copilot for work or study?"
+      }
+    ],
+    "reasoning": {
+      "effort": "medium"
+    },
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "name": "survey_question_review",
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "construct": { "type": "string" },
+            "problems": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "revised_question": { "type": "string" },
+            "reporting_note": { "type": "string" }
+          },
+          "required": [
+            "construct",
+            "problems",
+            "revised_question",
+            "reporting_note"
+          ]
+        },
+        "strict": true
+      }
+    },
+    "metadata": {
+      "project": "AI workshop demo",
+      "task": "survey_question_review"
+    }
+  }'</code></pre>
+</section>
+
+<!-- SDK -->
+<section>
+  <span class="section-label">§4 Modes of interaction</span>
+  <h2>The SDK</h2>
+  <div class="cols">
+    <div class="col">
+      <h3>SDK</h3>
+      <p class="small">A thin wrapper around the API in Python, TypeScript, etc. Same control, less boilerplate.</p>
+      <p class="fragment small">SDKs make it easier to add batching, retries, streaming, schema validation, and structured outputs. But structured outputs are not a separate interaction mode: they are an option available through APIs and SDKs.</p>
+    </div>
+    <div class="col">
+      <div class="fragment callout">
+        <strong>Structured outputs:</strong> force the model to return data in a specific schema — JSON, typed objects, validated against a Zod/Pydantic schema. Essential for pipelines that need to parse model outputs programmatically.
+      </div>
+    </div>
+  </div>
+  <pre class="fragment scroll-code"><code>import OpenAI from "openai";
+
+const client = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const response = await client.responses.create({
+  model: "gpt-5.1",
+  input: [
+    {
+      role: "developer",
+      content:
+        "You are a survey methodologist. Review survey questions for clarity, bias, construct validity, recall burden, and response option problems.",
+    },
+    {
+      role: "user",
+      content:
+        "Review this survey question: In the last 12 months, how often have you used AI tools such as ChatGPT, Claude, Gemini, or Copilot for work or study?",
+    },
+  ],
+  reasoning: {
+    effort: "medium",
+  },
+  text: {
+    format: {
+      type: "json_schema",
+      name: "survey_question_review",
+      schema: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          construct: { type: "string" },
+          problems: {
+            type: "array",
+            items: { type: "string" },
+          },
+          revised_question: { type: "string" },
+          reporting_note: { type: "string" },
+        },
+        required: [
+          "construct",
+          "problems",
+          "revised_question",
+          "reporting_note",
+        ],
+      },
+      strict: true,
+    },
+  },
+  metadata: {
+    project: "AI workshop demo",
+    task: "survey_question_review",
+  },
+});
+
+console.log(response.output_text);</code></pre>
+</section>
+
+<!-- Agentic IDEs -->
+<section>
+  <span class="section-label">§4 Modes of interaction</span>
+  <h2>Third mode: agentic IDEs</h2>
+  <div class="cols">
+    <div class="col">
+      <p>Claude Code, Cursor, Windsurf and similar systems are not just chat interfaces or SDK calls. They combine a model with tools, files, terminals, version control, and an iterative loop.</p>
+      <p class="fragment">The model can inspect state, call tools, edit files, run checks, observe failures, and decide what to do next. This is the bridge from "using a model" to delegating a workflow.</p>
+    </div>
+    <div class="col fragment">
+      <div class="callout-warn">
+        <strong>Research implication:</strong> agentic IDEs are powerful but harder to reproduce. The agent makes decisions about context management, tool use, retries, and stopping criteria that are difficult to log fully.
+      </div>
+      <p class="small muted" style="margin-top:0.8em">Day 3 topic.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Live API demo -->
+<section>
+  <span class="section-label">§4 Modes of interaction</span>
+  <h2>Live: calling the API</h2>
+  <div id="demo-controls">
+    <div id="demo-env-status">Anthropic key loaded from .env</div>
+    <button id="demo-run" onclick="runDemo()">Run ▶</button>
+  </div>
+  <div id="demo-container">
+    <div style="flex:1; display:flex; flex-direction:column;">
+      <div class="demo-label">Request</div>
+      <textarea id="demo-code">// The exact same thing as the JSON slide — but live.
+
+const rawResponse = await fetch(API_URL, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "x-api-key": API_KEY,           // Anthropic
+    "anthropic-version": "2023-06-01",
+    "anthropic-dangerous-direct-browser-access": "true"
+  },
+  body: JSON.stringify({
+    model: "claude-sonnet-4-20250514",
+    max_tokens: 256,
+    temperature: 0,
+    system: "You are a helpful survey coding assistant. Be concise.",
+    messages: [{
+      role: "user",
+      content: "Classify this open-ended response into one of: [positive, negative, mixed, unclear].\n\nResponse: 'The service was fine but I waited too long and nobody seemed to care.'"
+    }]
+  })
+});
+
+const data = await rawResponse.json();
+
+console.log(data);                         // full API response
+console.log(data.content[0].text);          // just the model's answer</textarea>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column;">
+      <div class="demo-label">Response</div>
+      <div id="demo-output">// Click Run to see the response.</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════
+     §5 — REPRODUCIBILITY
+     ════════════════════════════════════════════════════════ -->
+<section class="section-intro">
+  <span class="section-label">Section 5</span>
+  <h2>Reproducibility and replicability</h2>
+  <p>What can go wrong, what to log, and what to accept.</p>
+</section>
+
+<!-- Non-determinism -->
+<section>
+  <span class="section-label">§5 Reproducibility</span>
+  <h2>Why LLMs can still be non-deterministic at temperature 0</h2>
+  <div class="cols">
+    <div class="col">
+      <p><strong>Greedy decoding removes sampling randomness, but not numerical variation in inference.</strong></p>
+      <p class="fragment small">Temperature 0 + greedy decoding does not guarantee the same answer every time. The problem is not the transformer architecture itself, and it is not random sampling once temperature is 0.</p>
+      <p class="fragment small">The issue is floating-point arithmetic on GPUs. Floating-point addition is not associative: <code>(a+b)+c ≠ a+(b+c)</code>.</p>
+      <div class="fragment callout-warn">
+        <strong>Key takeaway:</strong> Temperature 0 removes stochastic decoding, but not numerical non-determinism.
+      </div>
+    </div>
+    <div class="col fragment">
+      <div class="example-box" style="font-size:0.82em">
+        <p>Same prompt</p>
+        <p>↓</p>
+        <p>Different batch context</p>
+        <p>↓</p>
+        <p>Different floating-point reduction order</p>
+        <p>↓</p>
+        <p>Slightly different logits</p>
+        <p>↓</p>
+        <p>Different chosen token</p>
+        <p>↓</p>
+        <p>Different completion</p>
+      </div>
+      <div class="fragment xsmall muted" style="margin-top:0.5em">
+        <p><code>(0.1 + 1e20) - 1e20 = 0</code></p>
+        <p><code>0.1 + (1e20 - 1e20) = 0.1</code></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Batch invariance -->
+<section>
+  <span class="section-label">§5 Reproducibility</span>
+  <h2>The real issue: batch invariance — and yes, it can be fixed</h2>
+  <div class="cols">
+    <div class="col">
+      <p><strong>Many inference kernels are deterministic run-to-run, but not batch-invariant.</strong></p>
+      <p class="fragment small">A kernel is batch-invariant if your request gets the same numerical result regardless of what other requests are processed alongside it.</p>
+      <p class="fragment small">In practice, output can change if the server processes your request alone, in a larger batch, or with a different batch shape.</p>
+      <p class="fragment small">LLM decoding is path dependent: a tiny numerical difference can flip one token, one token changes the next context, and the whole completion diverges.</p>
+    </div>
+    <div class="col fragment">
+      <div class="example-box">
+        <p><strong>Standard serving</strong>: dynamic batching → non-batch-invariant kernels → tiny logit differences → output may vary</p>
+        <p><strong>Deterministic serving</strong>: batch-invariant kernels → same numerical path → same logits → same output</p>
+      </div>
+      <p class="fragment small">Thinking Machines Lab showed deterministic inference is possible: same prompt, temperature 0, batch-invariant deterministic kernels, same completion 1,000/1,000 times.</p>
+      <table class="fragment tight-table">
+        <thead><tr><th>Configuration</th><th>Time</th></tr></thead>
+        <tbody>
+          <tr><td>vLLM default</td><td>26 s</td></tr>
+          <tr><td>Deterministic vLLM (unoptimised)</td><td>55 s</td></tr>
+          <tr><td>Deterministic vLLM (improved attention kernel)</td><td>42 s</td></tr>
+        </tbody>
+      </table>
+      <div class="fragment callout" style="margin-top:0.5em">
+        <strong>Key takeaway:</strong> Non-determinism is mainly an engineering property of the inference stack, not an unavoidable property of transformers. Deterministic LLM inference is possible, but slower.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Hallucinations -->
+<section>
+  <span class="section-label">§5 Reproducibility</span>
+  <h2>Hallucinations</h2>
+  <p class="muted small" style="margin-top:-0.3em">Is the answer true?</p>
+  <div class="cols" style="margin-top:0.3em">
+    <div class="col">
+      <p class="bold" style="margin-bottom:0.2em">Mitigation strategies:</p>
+      <ul>
+        <li class="fragment"><strong>RAG</strong> — Retrieval-Augmented Generation: ground the model in source documents</li>
+        <li class="fragment"><strong>Decoding interventions</strong> — temperature, top-p, top-k: constrain the probability distribution at inference time</li>
+        <li class="fragment"><strong>Chain-of-thought</strong> — reasoning tokens help the model check its own work</li>
+      </ul>
+    </div>
+    <div class="col">
+      <ul>
+        <li class="fragment"><strong>Training methods</strong> — RLHF reduces hallucination; abstention calibration teaches the model to say "I don't know"</li>
+        <li class="fragment"><strong>Factuality scoring</strong> — external models or tools verify claims</li>
+        <li class="fragment"><strong>Evaluation</strong> — systematic benchmarks for factual accuracy</li>
+      </ul>
+      <div class="fragment callout-warn" style="margin-top:0.5em">
+        No mitigation eliminates hallucination entirely. If your research depends on factual accuracy, you must verify outputs independently.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Model versioning + context window -->
+<section>
+  <span class="section-label">§5 Reproducibility</span>
+  <h2>Model versioning and context effects</h2>
+  <div class="cols">
+    <div class="col">
+      <h3>Versioning</h3>
+      <p class="small">Models have <strong>snapshots</strong> (<code>claude-sonnet-4-20250514</code>) and <strong>aliases</strong> (<code>claude-sonnet-4</code>). The alias points to the latest snapshot and can change under your feet.</p>
+      <ul class="fragment small">
+        <li>New models ≠ better-tuned releases. Architecture, training data, and capabilities can change completely.</li>
+        <li>Model cards document known capabilities and limitations — read them.</li>
+        <li>Prompts that worked on one snapshot may fail on the next.</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h3 class="fragment">Context-window effects</h3>
+      <p class="fragment small">The context window is finite (8K–2M tokens depending on model). As you fill it, behaviour changes:</p>
+      <ul class="fragment small">
+        <li>Information at the <em>beginning</em> and <em>end</em> of the context is recalled better than the middle ("lost in the middle")</li>
+        <li>Longer contexts cost more and run slower</li>
+        <li>Models may silently degrade on very long inputs</li>
+      </ul>
+      <div class="fragment callout">
+        <strong>Limits of reproducibility:</strong> Does your task rely on <em>parametric memory</em> (what the model learned in training) or on the <em>context window</em> (what you provide)? The former is harder to reproduce; the latter is fully in your control.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- What to report -->
+<section>
+  <span class="section-label">§5 Reproducibility</span>
+  <h2>What to report</h2>
+  <div class="cols">
+    <div class="col">
+      <p>If you publish anything that used an LLM, log and report:</p>
+      <table style="margin-top:0.5em">
+        <tbody>
+          <tr class="fragment"><td class="bold">Model</td><td>Full name + snapshot ID</td></tr>
+          <tr class="fragment"><td class="bold">Temperature</td><td>And top-p, if set</td></tr>
+          <tr class="fragment"><td class="bold">Max tokens</td><td>Both input limit and output limit</td></tr>
+          <tr class="fragment"><td class="bold">System prompt</td><td>Verbatim, in full</td></tr>
+          <tr class="fragment"><td class="bold">User prompt</td><td>Template + any variable substitution</td></tr>
+          <tr class="fragment"><td class="bold">Seed</td><td>If the API supports it</td></tr>
+          <tr class="fragment"><td class="bold">Date of call</td><td>Models get updated; date anchors the version</td></tr>
+          <tr class="fragment"><td class="bold">Full response</td><td>Including tool calls, stop reason, usage metadata</td></tr>
+          <tr class="fragment"><td class="bold">Interface</td><td>Chat / API / SDK / agent — and version</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col fragment">
+      <div class="callout">
+        <strong>AAPOR-style transparency:</strong> treat the LLM call like a survey instrument. Document the instrument (prompts), the sampling method (temperature), the fieldwork period (dates), and the response data (outputs). If you wouldn't publish a survey without a methods section, don't publish LLM results without one.
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════
+     WRAP
+     ════════════════════════════════════════════════════════ -->
+<section class="section-intro">
+  <h2>Today: what's underneath the chat.</h2>
+  <p style="margin-top:1em">Day 2: how to control it — prompts, knowledge, memory, tools.</p>
+</section>
+
+</div><!-- .slides -->
+</div><!-- .reveal -->
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script>
+Reveal.initialize({
+  hash: true,
+  slideNumber: 'c/t',
+  showSlideNumber: 'all',
+  transition: 'none',
+  transitionSpeed: 'fast',
+  width: 1200,
+  height: 700,
+  margin: 0.04,
+  center: false,
+  progress: true,
+  controls: false,
+  pdfSeparateFragments: false,
+});
+
+// ── Collapsible section sidebar ──
+const sectionSidebar = document.getElementById('section-sidebar');
+const sectionSidebarList = document.getElementById('section-sidebar-list');
+const sectionSidebarToggle = document.getElementById('section-sidebar-toggle');
+const allSlides = Array.from(document.querySelectorAll('.reveal .slides > section'));
+const sectionLinks = allSlides
+  .map((slide, index) => {
+    if (!slide.classList.contains('section-intro')) return null;
+    const label = slide.querySelector('.section-label')?.textContent.trim();
+    const title = slide.querySelector('h2')?.textContent.trim();
+    if (!label || !title || !label.startsWith('Section ')) return null;
+    return { index, label, title };
+  })
+  .filter(Boolean);
+
+let sectionSidebarTimer;
+
+function setSectionSidebarOpen(isOpen) {
+  sectionSidebar.classList.toggle('is-open', isOpen);
+  sectionSidebarToggle.setAttribute('aria-expanded', String(isOpen));
+}
+
+function scheduleSectionSidebarClose() {
+  clearTimeout(sectionSidebarTimer);
+  sectionSidebarTimer = setTimeout(() => {
+    setSectionSidebarOpen(false);
+  }, 2400);
+}
+
+function closeSectionSidebarNow() {
+  clearTimeout(sectionSidebarTimer);
+  setSectionSidebarOpen(false);
+}
+
+function updateSectionSidebarActive() {
+  const current = Reveal.getIndices().h;
+  const active = [...sectionLinks].reverse().find(section => section.index <= current) || sectionLinks[0];
+  sectionSidebarList.querySelectorAll('button').forEach(button => {
+    const isActive = Number(button.dataset.slideIndex) === active.index;
+    button.classList.toggle('is-active', isActive);
+    if (isActive) {
+      button.setAttribute('aria-current', 'page');
+    } else {
+      button.removeAttribute('aria-current');
+    }
+  });
+}
+
+sectionLinks.forEach(section => {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.dataset.slideIndex = section.index;
+  button.setAttribute('aria-label', `${section.label}: ${section.title}`);
+  button.innerHTML = `<span class="section-sidebar-index">${section.label.replace('Section ', 'S')}</span><span>${section.title}</span>`;
+  button.addEventListener('click', () => {
+    Reveal.slide(section.index);
+    setSectionSidebarOpen(true);
+    scheduleSectionSidebarClose();
+  });
+  sectionSidebarList.appendChild(button);
+});
+
+sectionSidebarToggle.addEventListener('click', () => {
+  const isOpen = !sectionSidebar.classList.contains('is-open');
+  setSectionSidebarOpen(isOpen);
+  if (isOpen) {
+    scheduleSectionSidebarClose();
+  }
+});
+sectionSidebar.addEventListener('mouseenter', () => {
+  clearTimeout(sectionSidebarTimer);
+  setSectionSidebarOpen(true);
+});
+sectionSidebar.addEventListener('mouseleave', closeSectionSidebarNow);
+sectionSidebar.addEventListener('focusin', () => {
+  clearTimeout(sectionSidebarTimer);
+  setSectionSidebarOpen(true);
+});
+sectionSidebar.addEventListener('focusout', scheduleSectionSidebarClose);
+Reveal.on('slidechanged', updateSectionSidebarActive);
+updateSectionSidebarActive();
+
+// ── Live API demo ──
+window.loadAnthropicApiKey = async function loadAnthropicApiKey() {
+  const response = await fetch('.env');
+  if (!response.ok) {
+    throw new Error('Could not load .env. Serve the deck over localhost so the browser can read it.');
+  }
+
+  const envText = await response.text();
+  const env = {};
+  for (const line of envText.split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const match = trimmed.match(/^([A-Za-z_][A-Za-z0-9_]*)=(.*)$/);
+    if (!match) continue;
+    let value = match[2].trim();
+    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1);
+    }
+    env[match[1]] = value;
+  }
+
+  const key = env.ANTHROPIC_API_KEY || env.API_KEY;
+  if (!key) {
+    throw new Error('.env must contain ANTHROPIC_API_KEY=...');
+  }
+  return key;
+};
+
+window.runDemo = async function runDemo() {
+  const btn = document.getElementById('demo-run');
+  const output = document.getElementById('demo-output');
+
+  btn.disabled = true;
+  btn.textContent = 'Running…';
+  output.textContent = '// Loading ANTHROPIC_API_KEY from .env…\n';
+
+  try {
+    const key = await loadAnthropicApiKey();
+    output.textContent += '// Sending request…\n';
+
+    const url = 'https://api.anthropic.com/v1/messages';
+    const headers = {
+      'Content-Type': 'application/json',
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true',
+    };
+    const body = JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 256,
+      temperature: 0,
+      system: 'You are a helpful survey coding assistant. Be concise.',
+      messages: [{
+        role: 'user',
+        content: "Classify this open-ended response into one of: [positive, negative, mixed, unclear].\n\nResponse: 'The service was fine but I waited too long and nobody seemed to care.'"
+      }]
+    });
+
+    const res = await fetch(url, { method: 'POST', headers, body });
+    const data = await res.json();
+    output.textContent = JSON.stringify(data, null, 2);
+  } catch (err) {
+    output.textContent = '// Error: ' + err.message;
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Run ▶';
+};
+</script>
+</body>
+</html>

@@ -72,6 +72,14 @@ $(document).ready(function () {
     $('.panel-cover').addClass('panel-cover--collapsed')
   }
 
+  if (window.location.hash && window.location.hash == '#llm2026') {
+    $('.panel-cover').addClass('panel-cover--collapsed')
+  }
+
+  if (window.location.pathname && (window.location.pathname == '/llm2026' || window.location.pathname == '/llm2026/')) {
+    $('.panel-cover').addClass('panel-cover--collapsed')
+  }
+
 
 /*
 if (window.location.pathname && window.location.pathname == '{{ site.url }}') {
